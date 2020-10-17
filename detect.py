@@ -2,40 +2,50 @@ import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
-counter = 0
-
-def start_detect(config):
-    file_dir = input("File Directory: ")
-    patterns = "*"
-    ignore_patterns = ""
-    ignore_directories = False
-    case_sensitive = True
-    my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
-    my_event_handler.on_created = on_created
-    detect_changes(my_event_handler, file_dir)
+from send_email import EmailSender, construct_email
 
 
-def detect_changes(my_event_handler, path):
-    go_recursively = True
-    my_observer = Observer()
-    my_observer.schedule(my_event_handler, path, recursive=go_recursively)
-    my_observer.start()
-    previous_counter = counter
-    try:
-        while True:
-            if counter == previous_counter:
-                print("status unchanged!")
-            else:
-                file_added = counter - previous_counter
-                print(f"{file_added} files were added!")
-            previous_counter = counter
-            time.sleep(10)
-    except KeyboardInterrupt:
-        my_observer.stop()
-        my_observer.join()
+class Detector(object):
+    SLEEP_TIME = 3600
 
+    def __init__(self, config):
+        self.config = config
+        self.counter = 1
+        self.detect_path = self.config["detect_path"]
+        self.__class__.SLEEP_TIME = self.config["sleep_time"]
 
-def on_created(event):
-    print(f"{event.src_path} created.")
-    global counter
-    counter += 1
+    def start_detect(self):
+        patterns = "*"
+        ignore_patterns = ""
+        ignore_directories = False
+        case_sensitive = True
+        my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
+        my_event_handler.on_created = self.on_created
+        self.detect_changes(my_event_handler)
+
+    def detect_changes(self, my_event_handler):
+        my_observer = Observer()
+        my_observer.schedule(my_event_handler, self.detect_path, recursive=True)
+        my_observer.start()
+        previous_counter = 0
+        email_sender = EmailSender(self.config)
+        sleep_time = self.SLEEP_TIME
+        try:
+            while True:
+                print("Detecting File Changes:")
+                if self.counter == previous_counter:
+                    print("status unchanged!")
+                    message = construct_email(self.detect_path)
+                    email_sender.send_emails(message)
+                else:
+                    file_added = self.counter - previous_counter
+                    print(f"{file_added} files were added during the past hour!")
+                previous_counter = self.counter
+                time.sleep(sleep_time)
+        except KeyboardInterrupt:
+            my_observer.stop()
+            my_observer.join()
+
+    def on_created(self, event):
+        print(f"{event.src_path} created.")
+        self.counter += 1
