@@ -1,5 +1,5 @@
 import yaml
-from detect import start_detect
+from detect import Detector
 
 
 config_dir = './'
@@ -7,5 +7,12 @@ config_dir = './'
 config_file_path = config_dir + 'config.yml'
 config = yaml.safe_load(open(config_file_path, 'r'))
 
+# start_detect(config)
+
 if __name__ == "__main__":
-    start_detect(config)
+    import os
+    print(os.getcwd())
+
+    print("====================================FCD Started====================================")
+    detector = Detector(config)
+    detector.start_detect()
