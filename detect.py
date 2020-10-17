@@ -1,42 +1,41 @@
 import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
-from time import sleep
 
+counter = 0
 
 def start_detect(config):
-    previous = list()
-    while True:
-        print(config["email"]["sender"])
-        sleep(10)
-
-
-def detect_changes():
+    file_dir = input("File Directory: ")
     patterns = "*"
     ignore_patterns = ""
     ignore_directories = False
     case_sensitive = True
     my_event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, ignore_directories, case_sensitive)
     my_event_handler.on_created = on_created
-    my_event_handler.on_deleted = on_deleted
-    my_event_handler.on_modified = on_modified
-    my_event_handler.on_moved = on_moved
-    path = "."
+    detect_changes(my_event_handler, file_dir)
+
+
+def detect_changes(my_event_handler, path):
     go_recursively = True
     my_observer = Observer()
     my_observer.schedule(my_event_handler, path, recursive=go_recursively)
+    my_observer.start()
+    previous_counter = counter
+    try:
+        while True:
+            if counter == previous_counter:
+                print("status unchanged!")
+            else:
+                file_added = counter - previous_counter
+                print(f"{file_added} files were added!")
+            previous_counter = counter
+            time.sleep(10)
+    except KeyboardInterrupt:
+        my_observer.stop()
+        my_observer.join()
+
 
 def on_created(event):
-    print(f"hey, {event.src_path} has been created!")
-
-
-def on_deleted(event):
-    print(f"what the f**k! Someone deleted {event.src_path}!")
-
-
-def on_modified(event):
-    print(f"hey buddy, {event.src_path} has been modified")
-
-
-def on_moved(event):
-    print(f"ok ok ok, someone moved {event.src_path} to {event.dest_path}")
+    print(f"{event.src_path} created.")
+    global counter
+    counter += 1
