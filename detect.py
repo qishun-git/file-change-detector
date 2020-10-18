@@ -30,20 +30,19 @@ class Detector(object):
         print(f"Creating an observer for path: {self.detect_path}")
         my_observer.schedule(my_event_handler, self.detect_path, recursive=True)
         my_observer.start()
-        previous_counter = 0
         email_sender = EmailSender(self.config)
         sleep_time = self.SLEEP_TIME
         try:
             while True:
                 print("Detecting File Changes:")
-                if self.counter == previous_counter:
+                if self.counter == 0:
                     print(f"The last file added is {self.last_added_file}")
                     message = construct_email(self.detect_path, self.last_added_file)
                     email_sender.send_emails(message)
                 else:
-                    file_added = self.counter - previous_counter
+                    file_added = self.counter
                     print(f"{file_added} files were added during the past hour!")
-                previous_counter = self.counter
+                self.counter = 0
                 time.sleep(sleep_time)
         except KeyboardInterrupt:
             my_observer.stop()
