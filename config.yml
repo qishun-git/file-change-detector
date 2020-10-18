@@ -1,0 +1,11 @@
+email:
+  server: "smtp.changeme.com"
+  username: "changeme"
+  password: "changeme"
+  sender: "changeme"
+  receivers:
+    - "changeme"
+
+sleep_time: 3600
+
+detect_path: "changeme"
