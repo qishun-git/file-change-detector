@@ -1,11 +1,10 @@
-# -*- coding: UTF-8 -*-
-
+import os
 import yaml
 import logging
 from detect import Detector
 
 
-config_dir = './'
+config_dir = os.getcwd()
 # Load configuration.
 config_file_path = config_dir + 'config.yml'
 config = yaml.safe_load(open(config_file_path, 'r'))

@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 import smtplib
 import logging
 from email.mime.text import MIMEText
