@@ -4,7 +4,7 @@ import logging
 from detect import Detector
 
 
-config_dir = os.getcwd()
+config_dir = "/var/services/video/xiaomi_camera_videos/file-change-detector/"
 # Load configuration.
 config_file_path = config_dir + 'config.yml'
 config = yaml.safe_load(open(config_file_path, 'r'))
