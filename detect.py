@@ -1,5 +1,6 @@
 import os
 import time
+import logging
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 
@@ -27,7 +28,7 @@ class Detector(object):
 
     def detect_changes(self, my_event_handler):
         my_observer = Observer()
-        print(f"Creating an observer for path: {self.detect_path}")
+        logging.info(f"Creating an observer for path: {self.detect_path}")
         my_observer.schedule(my_event_handler, self.detect_path, recursive=True)
         my_observer.start()
         email_sender = EmailSender(self.config)
@@ -36,12 +37,12 @@ class Detector(object):
             while True:
                 print("Detecting File Changes:")
                 if self.counter == 0:
-                    print(f"The last file added is {self.last_added_file}")
+                    logging.info(f"No video was uploaded. The last file added is {self.last_added_file}")
                     message = construct_email(self.detect_path, self.last_added_file)
                     email_sender.send_emails(message)
                 else:
                     file_added = self.counter
-                    print(f"{file_added} files were added during the past hour!")
+                    logging.info(f"{file_added} files were added during the past hour!")
                 self.counter = 0
                 time.sleep(sleep_time)
         except KeyboardInterrupt:

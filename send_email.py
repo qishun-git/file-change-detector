@@ -1,4 +1,5 @@
 import smtplib
+import logging
 from email.mime.text import MIMEText
 from email.header import Header
 
@@ -33,6 +34,6 @@ class EmailSender(object):
             server.sendmail(self.sender, self.receivers, message.as_string())
             server.close()
             for receiver in self.receivers:
-                print("Successfully sent email to " + receiver)
+                logging.info("Successfully sent email to " + receiver)
         except smtplib.SMTPException:
-            print("Error: Email sending failed")
+            logging.error("Error: Email sending failed")
