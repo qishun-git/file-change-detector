@@ -3,8 +3,8 @@ from email.mime.text import MIMEText
 from email.header import Header
 
 
-def construct_email(dir):
-    message = MIMEText(f"No video was uploaded to '{dir}' since 1 hour ago, please check the functionality of your home camera.", "plain", "utf-8")
+def construct_email(path, file):
+    message = MIMEText(f"No video was uploaded to '{path}' since 1 hour ago, please check the functionality of your home camera. The latest added file is {file}", "plain", "utf-8")
     message['From'] = Header("File Change Detector", 'utf-8')
     message['To'] = Header("Members of the CatKingdom", 'utf-8')
 

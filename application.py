@@ -10,9 +10,6 @@ config = yaml.safe_load(open(config_file_path, 'r'))
 # start_detect(config)
 
 if __name__ == "__main__":
-    import os
-    print(os.getcwd())
-
     print("====================================FCD Started====================================")
     detector = Detector(config)
     detector.start_detect()

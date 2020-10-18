@@ -1,3 +1,4 @@
+import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
@@ -11,7 +12,8 @@ class Detector(object):
     def __init__(self, config):
         self.config = config
         self.counter = 1
-        self.detect_path = self.config["detect_path"]
+        self.last_added_file = ""
+        self.detect_path = os.path.abspath(self.config["detect_path"])
         self.__class__.SLEEP_TIME = self.config["sleep_time"]
 
     def start_detect(self):
@@ -25,6 +27,7 @@ class Detector(object):
 
     def detect_changes(self, my_event_handler):
         my_observer = Observer()
+        print(f"Creating an observer for path: {self.detect_path}")
         my_observer.schedule(my_event_handler, self.detect_path, recursive=True)
         my_observer.start()
         previous_counter = 0
@@ -34,8 +37,8 @@ class Detector(object):
             while True:
                 print("Detecting File Changes:")
                 if self.counter == previous_counter:
-                    print("status unchanged!")
-                    message = construct_email(self.detect_path)
+                    print(f"The last file added is {self.last_added_file}")
+                    message = construct_email(self.detect_path, self.last_added_file)
                     email_sender.send_emails(message)
                 else:
                     file_added = self.counter - previous_counter
@@ -48,4 +51,5 @@ class Detector(object):
 
     def on_created(self, event):
         print(f"{event.src_path} created.")
+        self.last_added_file = event.src_path
         self.counter += 1
