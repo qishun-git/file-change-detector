@@ -1,4 +1,3 @@
-import os
 import yaml
 import logging
 from detect import Detector

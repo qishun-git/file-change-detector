@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 import os
 import time
 import logging
@@ -14,7 +12,7 @@ class Detector(object):
 
     def __init__(self, config):
         self.config = config
-        self.counter = 1
+        self.counter = 0
         self.last_added_file = ""
         self.detect_path = os.path.abspath(self.config["detect_path"])
         self.__class__.SLEEP_TIME = self.config["sleep_time"]
@@ -52,6 +50,6 @@ class Detector(object):
             my_observer.join()
 
     def on_created(self, event):
-        print(f"{event.src_path} created.")
+        logging.info(f"{event.src_path} created.")
         self.last_added_file = event.src_path
         self.counter += 1
