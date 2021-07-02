@@ -1,7 +1,8 @@
-import yaml
 import logging
-from detect import Detector
 
+import yaml
+
+from detect import Detector
 
 config_dir = "./"
 # Load configuration.

@@ -1,11 +1,13 @@
-import smtplib
 import logging
-from email.mime.text import MIMEText
+import smtplib
 from email.header import Header
+from email.mime.text import MIMEText
 
 
 def construct_email(path, file):
-    message = MIMEText(f"No video was uploaded to '{path}' since 1 hour ago, please check the functionality of your home camera. The latest added file is {file}", "plain", "utf-8")
+    message = MIMEText(
+        f"No video was uploaded to '{path}' since 1 hour ago, please check the functionality of your home camera. The latest added file is {file}",
+        "plain", "utf-8")
     message['From'] = Header("File Change Detector", 'utf-8')
     message['To'] = Header("Members of the CatKingdom", 'utf-8')
 
@@ -15,9 +17,8 @@ def construct_email(path, file):
     return message
 
 
-class EmailSender(object):
+class EmailSender():
     def __init__(self, config):
-        super().__init__()
         # SMTP service
         mail_config = config["email"]
         self.mail_host = mail_config["server"]

@@ -1,8 +1,9 @@
+import logging
 import os
 import time
-import logging
-from watchdog.observers import Observer
+
 from watchdog.events import PatternMatchingEventHandler
+from watchdog.observers import Observer
 
 from send_email import EmailSender, construct_email
 
